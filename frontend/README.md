@@ -1,92 +1,86 @@
-# Visit Sri Lanka — Website (Phase 0)
+# Visit Sri Lanka — Frontend
 
-Modern tourism platform for Sri Lanka. This is the Phase 0 scaffold: project
-structure, design tokens, and base layout — no page designs yet (see the
-Architecture & Development Roadmap document for the full plan).
+A tourism platform helping travelers discover Sri Lanka's beaches, wildlife,
+heritage sites, and mountains — plan itineraries, estimate trip budgets, and
+manage a travel profile.
 
-## Stack
+> **Honest status check**: this README describes what's actually built, not
+> the full original product vision. See "What's not here yet" below and
+> `../docs/architecture.md` for the complete gap list.
 
-- Next.js 15 (App Router) + TypeScript
-- Tailwind CSS v3 + shadcn/ui (new-york style)
-- Framer Motion, Lucide React
-- Fonts: Playfair Display (headings) + Inter (body)
+## Features (built)
 
-## Getting Started
+- **Trip Planner** — 5-step wizard (destinations → duration → travel style
+  → budget → generated day-by-day itinerary)
+- **Budget Calculator** — live cost breakdown by category, USD/LKR toggle,
+  boarding-pass-style summary card
+- **Authentication** — login/register UI wired to real Supabase Auth
+  (email/password, with email-confirmation handling), profile page with
+  saved trips / favorites / travel history tabs
+- **About & Contact pages** — mission, stats, team sections; validated
+  contact form
+- **SEO** — sitemap.xml, robots.txt, per-page metadata, Open Graph/Twitter
+  cards, Organization JSON-LD, schema builders ready for Destinations/Hotels
+  detail pages
+- **Error handling** — custom 404, global loading state, error boundary
 
-1. Install dependencies:
+## Features (planned, not built)
 
-   ```bash
-   npm install
-   ```
+- Destinations & Hotels listing/detail pages (data layer exists in
+  `lib/api/destinations.ts` / `hotels.ts`, no UI consumes it yet)
+- Global Header/Footer navigation
+- Home page real content (currently a Phase 0 verification placeholder)
+- PWA, i18n (next-intl), Spring Boot API integration
 
-2. Copy the environment file:
+## Tech Stack
 
-   ```bash
-   cp .env.example .env.local
-   ```
+- **Framework**: Next.js 15 (App Router), TypeScript, React 19
+- **Styling**: Tailwind CSS v3, shadcn/ui (new-york style)
+- **Motion**: Framer Motion
+- **Icons**: Lucide React
+- **Validation**: Zod
+- **Backend**: Supabase (PostgreSQL, Auth) — see `../docs/database.md`
+- **Analytics**: Vercel Analytics + Google Analytics 4 (optional, env-gated)
+- **Fonts**: Playfair Display (headings), Inter (body)
 
-3. Run the dev server:
-
-   ```bash
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) — you should see a
-   verification page confirming fonts, color tokens, and shadcn/ui Button
-   variants (ocean / forest / sand) are working.
-
-## Adding more shadcn/ui components later
-
-This project is already configured for the shadcn CLI (`components.json`).
-Once you have network access, add more primitives with:
+## Installation
 
 ```bash
-npx shadcn@latest add input dialog dropdown-menu select badge avatar
+npm install
+cp .env.example .env.local
+# fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+# (see ../docs/database.md to set up the Supabase project first)
+npm run dev
 ```
 
-They'll land in `src/components/ui/` alongside the existing `button.tsx` and
-`card.tsx`, using the same design tokens automatically.
+Open [http://localhost:3000](http://localhost:3000).
+
+Without Supabase env vars set, the app still builds and most pages render,
+but Login/Register/Profile will fail at runtime — Trip Planner and Budget
+Calculator work with zero backend since they're pure client-side logic.
+
+## Screenshots
+
+_Add screenshots here after your first deploy — none are included in this
+scaffold since there's no rendering environment available to generate real
+ones._
+
+## Deployment
+
+See `../docs/deployment.md` for the full Vercel + Supabase production
+checklist.
 
 ## Folder Structure
 
-See the Architecture doc for the full rationale. Summary:
-
-```
-src/
-├── app/                  # Routes ((marketing) and (auth) route groups)
-├── components/
-│   ├── ui/               # shadcn primitives
-│   ├── layout/            # Header, Footer, MobileNav
-│   ├── home/              # Home page sections
-│   ├── destinations/
-│   ├── hotels/
-│   ├── trip-planner/
-│   ├── budget/
-│   ├── shared/            # SectionHeading, RatingStars, PriceTag, etc.
-│   └── forms/
-├── lib/
-│   ├── api/                # Data-fetching abstraction (swappable backend)
-│   └── validations/        # zod schemas
-├── types/                  # Shared TypeScript interfaces
-├── data/                   # Mock JSON until Supabase is wired (Phase 9)
-├── hooks/
-└── styles/
-```
+See `../docs/architecture.md` for the current, accurate structure and data
+flow diagrams.
 
 ## Design Tokens
 
-Defined as CSS variables in `src/app/globals.css` and exposed as Tailwind
+Defined as CSS variables in `src/app/globals.css`, exposed as Tailwind
 utilities in `tailwind.config.ts`:
 
-- `bg-ocean-500`, `text-ocean-700`, etc. — beaches, water, primary actions
-- `bg-forest-600`, `text-forest-700`, etc. — wildlife, nature, secondary actions
-- `bg-sand-500`, `text-sand-600`, etc. — heritage, luxury, accents
+- `bg-ocean-500`, `text-ocean-700` — beaches, water, primary actions
+- `bg-forest-600`, `text-forest-700` — wildlife, nature, secondary actions
+- `bg-sand-500`, `text-sand-600` — heritage, luxury, accents
 - `font-display` (Playfair Display) for headings, `font-sans` (Inter) for body
-
-## What's Not Here Yet
-
-- Page designs (Home, Destinations, Hotels, etc.) — Phase 2+
-- PWA (`next-pwa`/Serwist), i18n (`next-intl`), Analytics — later phases per
-  the roadmap
-- Real data (Supabase) — currently no `data/*.json` populated yet either;
-  add mock content when building Phase 3+

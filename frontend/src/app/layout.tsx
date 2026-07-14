@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 
 import "./globals.css";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildOrganizationSchema } from "@/lib/seo/schema";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 // Display face — headings, hero copy, editorial moments (Architecture doc §4)
 const playfairDisplay = Playfair_Display({
@@ -67,7 +71,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${playfairDisplay.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+        >
+          Skip to main content
+        </a>
+        <JsonLd data={buildOrganizationSchema()} />
+        <div id="main-content">{children}</div>
+        <Analytics />
+        <GoogleAnalytics />
+      </body>
     </html>
   );
 }

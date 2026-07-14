@@ -1,9 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: import.meta.dirname,
   images: {
-    // Add remote hotel/destination image hosts here as content sources are finalized
-    remotePatterns: [],
+    // Real hotel/destination photos will come from Supabase Storage (Phase 9).
+    // Unsplash is listed for placeholder imagery during design/dev only —
+    // remove before production if not used for real content.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
   },
   // Security headers — see Architecture doc §13
   async headers() {

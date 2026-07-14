@@ -21,3 +21,17 @@ export const BUDGET_TIER_OPTIONS: BudgetTierOption[] = [
   { value: "Mid Range", label: "Mid Range", description: "3-star hotels, private drivers, sit-down meals", dailyRateUsd: 85 },
   { value: "Luxury", label: "Luxury", description: "Boutique villas, chauffeurs, fine dining", dailyRateUsd: 220 },
 ];
+
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+/** Only routes that actually exist — no Destinations/Hotels entries yet. */
+export const NAV_LINKS: NavLink[] = [
+  { label: "Home", href: "/" },
+  { label: "Trip Planner", href: "/trip-planner" },
+  { label: "Budget Calculator", href: "/budget-calculator" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
