@@ -1,0 +1,54 @@
+[
+  {
+    "id": "plan-adventure-7day",
+    "title": "7 Days Sri Lanka Adventure",
+    "duration": 7,
+    "destinations": ["Sigiriya", "Ella", "Yala"],
+    "travelStyle": "Adventure",
+    "budget": "Mid Range",
+    "days": [
+      { "day": 1, "location": "Sigiriya", "activities": ["Visit Lion Rock", "Village tour"], "estimatedCost": 85 },
+      { "day": 2, "location": "Sigiriya", "activities": ["Sigiriya Museum", "Pidurangala Rock sunrise hike"], "estimatedCost": 85 },
+      { "day": 3, "location": "Ella", "activities": ["Nine Arches Bridge", "Little Adam's Peak hike"], "estimatedCost": 85 },
+      { "day": 4, "location": "Ella", "activities": ["Ella Rock trek", "Tea plantation walk"], "estimatedCost": 85 },
+      { "day": 5, "location": "Yala", "activities": ["Morning safari drive", "Leopard tracking"], "estimatedCost": 85 },
+      { "day": 6, "location": "Yala", "activities": ["Bird watching", "Evening safari drive"], "estimatedCost": 85 },
+      { "day": 7, "location": "Sigiriya", "activities": ["Visit Lion Rock", "Village tour"], "estimatedCost": 85 }
+    ]
+  },
+  {
+    "id": "plan-beach-5day",
+    "title": "5 Days Beach Escape",
+    "duration": 5,
+    "destinations": ["Mirissa", "Galle"],
+    "travelStyle": "Relaxation",
+    "budget": "Luxury",
+    "days": [
+      { "day": 1, "location": "Mirissa", "activities": ["Whale watching boat trip", "Coconut Tree Hill"], "estimatedCost": 220 },
+      { "day": 2, "location": "Galle", "activities": ["Galle Fort walking tour", "Lighthouse viewpoint"], "estimatedCost": 220 },
+      { "day": 3, "location": "Mirissa", "activities": ["Beach relaxation", "Snorkeling at the reef"], "estimatedCost": 220 },
+      { "day": 4, "location": "Galle", "activities": ["Dutch Reformed Church", "Rampart sunset walk"], "estimatedCost": 220 },
+      { "day": 5, "location": "Mirissa", "activities": ["Whale watching boat trip", "Beach relaxation"], "estimatedCost": 220 }
+    ]
+  },
+  {
+    "id": "plan-cultural-10day",
+    "title": "10 Days Cultural Journey",
+    "duration": 10,
+    "destinations": ["Kandy", "Sigiriya", "Galle"],
+    "travelStyle": "Cultural",
+    "budget": "Budget",
+    "days": [
+      { "day": 1, "location": "Kandy", "activities": ["Temple of the Tooth", "Cultural dance show"], "estimatedCost": 35 },
+      { "day": 2, "location": "Kandy", "activities": ["Royal Botanical Gardens", "Kandy Lake walk"], "estimatedCost": 35 },
+      { "day": 3, "location": "Kandy", "activities": ["Temple of the Tooth", "Cultural dance show"], "estimatedCost": 35 },
+      { "day": 4, "location": "Sigiriya", "activities": ["Visit Lion Rock", "Village tour"], "estimatedCost": 35 },
+      { "day": 5, "location": "Sigiriya", "activities": ["Sigiriya Museum", "Pidurangala Rock sunrise hike"], "estimatedCost": 35 },
+      { "day": 6, "location": "Galle", "activities": ["Galle Fort walking tour", "Lighthouse viewpoint"], "estimatedCost": 35 },
+      { "day": 7, "location": "Galle", "activities": ["Dutch Reformed Church", "Rampart sunset walk"], "estimatedCost": 35 },
+      { "day": 8, "location": "Kandy", "activities": ["Royal Botanical Gardens", "Kandy Lake walk"], "estimatedCost": 35 },
+      { "day": 9, "location": "Sigiriya", "activities": ["Visit Lion Rock", "Village tour"], "estimatedCost": 35 },
+      { "day": 10, "location": "Galle", "activities": ["Galle Fort walking tour", "Rampart sunset walk"], "estimatedCost": 35 }
+    ]
+  }
+]

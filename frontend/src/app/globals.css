@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design tokens — Visit Sri Lanka
+  Source palette (see Architecture doc §4):
+    Ocean Blue  #0A6E8C  -> beaches, water, primary actions
+    Forest Green #2E7D4F -> wildlife, nature, secondary actions
+    Sand/Gold   #D9A441  -> heritage, luxury, accents
+  Values below are expressed as HSL (no hsl() wrapper) because shadcn/ui's
+  convention is `hsl(var(--token))` at the point of use — see tailwind.config.ts.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --primary: 194 87% 29%;              /* ocean-500 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 145 46% 34%;            /* forest-600 */
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 39 67% 55%;                /* sand-500 */
+    --accent-foreground: 0 0% 10%;
+
+    --muted: 194 30% 96%;                /* ocean-50-ish, desaturated */
+    --muted-foreground: 220 9% 46%;      /* neutral-500 */
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 194 20% 90%;
+    --input: 194 20% 90%;
+    --ring: 194 87% 29%;                 /* ocean-500 */
+
+    --radius: 0.75rem;
+  }
+
+  /* Reserved for later (dashboard/night-mode reading) — not used on the public
+     marketing site in Phase 1, but kept so shadcn primitives don't break if
+     dark mode is ever toggled on. */
+  .dark {
+    --background: 194 40% 7%;
+    --foreground: 0 0% 96%;
+
+    --card: 194 35% 10%;
+    --card-foreground: 0 0% 96%;
+
+    --primary: 194 70% 55%;
+    --primary-foreground: 194 40% 7%;
+
+    --secondary: 145 40% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 39 60% 60%;
+    --accent-foreground: 194 40% 7%;
+
+    --muted: 194 25% 16%;
+    --muted-foreground: 220 9% 65%;
+
+    --destructive: 0 63% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 194 25% 20%;
+    --input: 194 25% 20%;
+    --ring: 194 70% 55%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
