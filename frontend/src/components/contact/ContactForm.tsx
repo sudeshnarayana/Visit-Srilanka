@@ -35,7 +35,7 @@ export function ContactForm() {
     setStatus("submitting");
 
     // TODO: replace with a real submit — e.g. a Spring Boot /api/contact
-    // endpoint, or a Supabase `contact_messages` insert (Phase 9).
+    // endpoint, or a MongoDB `contact_messages` insert via a Route Handler.
     await new Promise((resolve) => setTimeout(resolve, 700));
     setStatus("sent");
   }

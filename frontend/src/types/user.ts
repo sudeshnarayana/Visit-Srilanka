@@ -1,8 +1,8 @@
 /**
  * User & Auth data model.
- * Kept as plain interfaces so this mirrors the eventual Supabase `users`
- * table (Phase 9) and Spring Boot UserDto without frontend code changing —
- * see Architecture doc §10.
+ * Kept as plain interfaces so this mirrors the MongoDB `users` collection
+ * (see docs/database.md) and a future Spring Boot UserDto without frontend
+ * code changing — see Architecture doc §10.
  */
 
 export type UserRole = "TOURIST" | "HOTEL_PARTNER" | "ADMIN";
@@ -17,7 +17,7 @@ export interface User {
   memberSince: string; // ISO date
 }
 
-/** Drives auth-aware UI (nav, profile page, route guards) once wired to Supabase. */
+/** Drives auth-aware UI (nav, profile page, route guards) via useAuth() / Auth.js. */
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;

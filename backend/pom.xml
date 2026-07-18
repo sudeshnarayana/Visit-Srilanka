@@ -28,15 +28,10 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Persistence: JPA + PostgreSQL (Supabase-hosted, per Architecture doc) -->
+        <!-- Persistence: Spring Data MongoDB (matches the frontend's database choice) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
         <!-- Bean Validation on DTOs (defense in depth, see Architecture doc §13) -->

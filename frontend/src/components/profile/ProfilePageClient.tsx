@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 import { ProfileCard } from "@/components/profile/ProfileCard";
 import { SavedTrips } from "@/components/profile/SavedTrips";
 import { FavoritePlaces } from "@/components/profile/FavoritePlaces";
 import { TravelHistory } from "@/components/profile/TravelHistory";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 import {
-  MOCK_USER,
   MOCK_FAVORITE_DESTINATIONS,
   MOCK_FAVORITE_HOTELS,
   MOCK_SAVED_TRIPS,
@@ -17,10 +18,13 @@ import {
 } from "@/data/mock-user";
 
 /**
- * Phase 6: UI-only profile page, seeded with mock data.
- * Phase 9 replaces MOCK_USER / MOCK_* with a session-derived user and
- * Supabase queries against `favorites`, `trip_plans`, and a travel-history
- * table — same component props, different data source.
+ * ProfileCard now shows the real signed-in user (via useAuth / Auth.js
+ * session). SavedTrips/FavoritePlaces/TravelHistory still render mock
+ * data — /api/trip-plans and /api/favorites exist (lib/api/tripPlans.ts,
+ * favorites.ts) but nothing on this page calls them yet. Wiring that up
+ * is the next real step, not done here to keep this migration scoped to
+ * "move auth + data layer to MongoDB" rather than also building out
+ * profile data fetching.
  */
 
 type Tab = "trips" | "favorites" | "history";
@@ -33,17 +37,33 @@ const TABS: { key: Tab; label: string }[] = [
 
 export function ProfilePageClient() {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [tab, setTab] = useState<Tab>("trips");
 
-  function handleLogout() {
-    // TODO Phase 9: await supabase.auth.signOut()
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  async function handleLogout() {
+    await logout();
     router.push("/");
+  }
+
+  if (isLoading || !user) {
+    return (
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <p className="text-sm">Loading your profile...</p>
+      </main>
+    );
   }
 
   return (
     <main className="mx-auto min-h-screen max-w-4xl px-4 py-16 sm:py-20">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
-        <ProfileCard user={MOCK_USER} onLogout={handleLogout} />
+        <ProfileCard user={user} onLogout={handleLogout} />
 
         <div className="flex flex-col gap-6">
           <div className="flex gap-2 overflow-x-auto border-b border-border">
@@ -77,3 +97,4 @@ export function ProfilePageClient() {
     </main>
   );
 }
+

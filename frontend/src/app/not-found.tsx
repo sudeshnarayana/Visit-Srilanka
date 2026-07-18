@@ -11,9 +11,9 @@ export default function NotFound() {
       </span>
       <div className="flex flex-col gap-2">
         <p className="font-display text-6xl font-bold text-primary">404</p>
-        <h1 className="font-display text-2xl font-semibold">Looks like you have wandered off the map</h1>
+        <h1 className="font-display text-2xl font-semibold">Looks like you've wandered off the map</h1>
         <p className="max-w-md text-muted-foreground">
-          The page you are looking for does not exist — maybe it moved, or the trail ends here.
+          The page you're looking for doesn't exist — maybe it moved, or the trail ends here.
         </p>
       </div>
       <div className="flex gap-3">

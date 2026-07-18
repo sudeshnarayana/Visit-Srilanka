@@ -14,9 +14,9 @@ manage a travel profile.
   → budget → generated day-by-day itinerary)
 - **Budget Calculator** — live cost breakdown by category, USD/LKR toggle,
   boarding-pass-style summary card
-- **Authentication** — login/register UI wired to real Supabase Auth
-  (email/password, with email-confirmation handling), profile page with
-  saved trips / favorites / travel history tabs
+- **Authentication** — login/register UI wired to real Auth.js (NextAuth v5)
+  + MongoDB Credentials auth (bcrypt-hashed passwords, JWT sessions),
+  profile page shows the real signed-in user
 - **About & Contact pages** — mission, stats, team sections; validated
   contact form
 - **SEO** — sitemap.xml, robots.txt, per-page metadata, Open Graph/Twitter
@@ -39,7 +39,7 @@ manage a travel profile.
 - **Motion**: Framer Motion
 - **Icons**: Lucide React
 - **Validation**: Zod
-- **Backend**: Supabase (PostgreSQL, Auth) — see `../docs/database.md`
+- **Backend**: MongoDB + Auth.js (NextAuth v5) — see `../docs/database.md`
 - **Analytics**: Vercel Analytics + Google Analytics 4 (optional, env-gated)
 - **Fonts**: Playfair Display (headings), Inter (body)
 
@@ -48,16 +48,16 @@ manage a travel profile.
 ```bash
 npm install
 cp .env.example .env.local
-# fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
-# (see ../docs/database.md to set up the Supabase project first)
+# fill in MONGODB_URI and AUTH_SECRET
+# (see ../docs/database.md to set up the MongoDB Atlas cluster first)
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Without Supabase env vars set, the app still builds and most pages render,
-but Login/Register/Profile will fail at runtime — Trip Planner and Budget
-Calculator work with zero backend since they're pure client-side logic.
+Without `MONGODB_URI` set, the app still builds and most pages render —
+Trip Planner and Budget Calculator work with zero backend since they're
+pure client-side logic — but Login/Register/Profile will fail at runtime.
 
 ## Screenshots
 
@@ -67,7 +67,7 @@ ones._
 
 ## Deployment
 
-See `../docs/deployment.md` for the full Vercel + Supabase production
+See `../docs/deployment.md` for the full Vercel + MongoDB Atlas production
 checklist.
 
 ## Folder Structure

@@ -6,6 +6,7 @@ import "./globals.css";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildOrganizationSchema } from "@/lib/seo/schema";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 // Display face — headings, hero copy, editorial moments (Architecture doc §4)
 const playfairDisplay = Playfair_Display({
@@ -79,7 +80,9 @@ export default function RootLayout({
           Skip to main content
         </a>
         <JsonLd data={buildOrganizationSchema()} />
-        <div id="main-content">{children}</div>
+        <SessionProvider>
+          <div id="main-content">{children}</div>
+        </SessionProvider>
         <Analytics />
         <GoogleAnalytics />
       </body>

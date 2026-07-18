@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Loader2, Mail, User as UserIcon, Globe, MailCheck } from "lucide-react";
+import { Loader2, Mail, User as UserIcon, Globe } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ type FieldErrors = Partial<
 
 export function RegisterForm() {
   const router = useRouter();
-  const { register, isAuthenticated, isLoading } = useAuth();
+  const { register, isLoading } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,7 +31,6 @@ export function RegisterForm() {
   const [country, setCountry] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,35 +55,16 @@ export function RegisterForm() {
     setErrors({});
 
     try {
+      // register() creates the user via /api/register, then signs them in
+      // immediately (MongoDB/Credentials auth has no email-confirmation
+      // step — see docs/architecture.md for that as a future improvement).
       await register(result.data);
-      if (isAuthenticated) {
-        router.push("/profile");
-      } else {
-        // Supabase's default project settings require email confirmation
-        // before a session exists — show a confirmation notice instead of
-        // redirecting into a page that expects a signed-in user.
-        setNeedsEmailConfirmation(true);
-      }
-    } catch {
-      setFormError("Something went wrong creating your account. Please try again.");
+      router.push("/profile");
+    } catch (err) {
+      setFormError(
+        err instanceof Error ? err.message : "Something went wrong creating your account. Please try again."
+      );
     }
-  }
-
-  if (needsEmailConfirmation) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-10 text-center"
-      >
-        <MailCheck className="h-10 w-10 text-secondary" />
-        <h3 className="font-display text-lg font-semibold">Check your email</h3>
-        <p className="text-sm text-muted-foreground">
-          We sent a confirmation link to <span className="font-medium text-foreground">{email}</span>.
-          Confirm your email to finish creating your account.
-        </p>
-      </motion.div>
-    );
   }
 
   return (

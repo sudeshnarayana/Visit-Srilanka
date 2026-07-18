@@ -29,6 +29,16 @@ See `backend/README.md` — this is intentionally minimal right now. The
 frontend does not call it yet; it exists so the folder/package structure is
 in place before Phase 3 development starts.
 
+## Documentation
+
+Full docs live in `docs/`:
+- `docs/architecture.md` — current structure, data flow, and an honest
+  list of what's built vs. still planned
+- `docs/database.md` — MongoDB collection schemas
+- `docs/api.md` — internal service layer + planned Spring Boot endpoints
+- `docs/deployment.md` — Vercel + MongoDB Atlas production checklist
+
+
 ## Why split now instead of later
 
 Keeping `frontend/` and `backend/` as siblings from day one means:

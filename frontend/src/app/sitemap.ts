@@ -3,9 +3,10 @@ import type { MetadataRoute } from "next";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://visitsrilanka.com";
 
 /**
- * Static routes only for now. Once Destinations/Hotels modules are backed
- * by Supabase (Phase 9), extend this with generated entries per
- * destination/hotel slug — see docs/architecture.md.
+ * Static routes only for now. Once Destinations/Hotels have real UI pages
+ * backed by lib/api/destinations.ts and hotels.ts (MongoDB), extend this
+ * with generated entries per destination/hotel slug — see
+ * docs/architecture.md.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [

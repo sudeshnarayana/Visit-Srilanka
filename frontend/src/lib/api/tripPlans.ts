@@ -1,37 +1,25 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
 import type { Itinerary } from "@/types/itinerary";
 
-/** Persists/retrieves generated itineraries against the `trip_plans` table. */
+/** Trip plan persistence — client-side fetch wrapper around /api/trip-plans. */
 
-export async function saveTripPlan(userId: string, itinerary: Itinerary) {
-  const supabase = createClient();
-  const { error } = await supabase.from("trip_plans").insert({
-    user_id: userId,
-    title: itinerary.title,
-    duration: itinerary.duration,
-    destinations: itinerary.destinations,
-    travel_style: itinerary.travelStyle,
-    budget_tier: itinerary.budget,
-    days: itinerary.days,
+export async function saveTripPlan(itinerary: Itinerary) {
+  const res = await fetch("/api/trip-plans", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(itinerary),
   });
-  if (error) throw error;
+  if (!res.ok) throw new Error("Failed to save trip plan");
 }
 
-export async function getUserTripPlans(userId: string) {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("trip_plans")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return data ?? [];
+export async function getUserTripPlans() {
+  const res = await fetch("/api/trip-plans");
+  if (!res.ok) throw new Error("Failed to load trip plans");
+  return res.json();
 }
 
 export async function deleteTripPlan(tripPlanId: string) {
-  const supabase = createClient();
-  const { error } = await supabase.from("trip_plans").delete().eq("id", tripPlanId);
-  if (error) throw error;
+  const res = await fetch(`/api/trip-plans?id=${tripPlanId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete trip plan");
 }

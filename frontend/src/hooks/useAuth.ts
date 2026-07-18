@@ -1,127 +1,75 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-import { createClient } from "@/lib/supabase/client";
-import type { AuthState, LoginCredentials, RegisterDetails, User } from "@/types/user";
-
-const isSupabaseConfigured =
-  !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-function mapSupabaseUser(supabaseUser: {
-  id: string;
-  email?: string;
-  user_metadata?: Record<string, unknown>;
-  created_at: string;
-}): User {
-  return {
-    id: supabaseUser.id,
-    name: (supabaseUser.user_metadata?.name as string) ?? "Traveler",
-    email: supabaseUser.email ?? "",
-    country: supabaseUser.user_metadata?.country as string | undefined,
-    role: (supabaseUser.user_metadata?.role as User["role"]) ?? "TOURIST",
-    memberSince: supabaseUser.created_at,
-  };
-}
+import type { LoginCredentials, RegisterDetails, User } from "@/types/user";
 
 /**
- * Real Supabase Auth integration (Phase 9) — replaces the Phase 6 mock.
- * Same public shape (`user`, `isAuthenticated`, `login`, `register`,
- * `logout`) so LoginForm/RegisterForm/ProfilePageClient/Header needed no
- * changes.
- *
- * Guarded: if NEXT_PUBLIC_SUPABASE_URL/ANON_KEY aren't set (e.g. during
- * local dev before Supabase is provisioned), this never constructs a real
- * Supabase client — the Header and every other page that calls useAuth()
- * would otherwise throw on render, since supabase-js validates the URL
- * synchronously in its constructor. Instead it resolves to a clean
- * "signed out, not configured" state, and login/register surface a clear
- * error instead of a blank-page crash.
+ * Auth.js-backed replacement for the old Supabase useAuth.
+ * Same public shape (`user`, `isAuthenticated`, `isLoading`, `login`,
+ * `register`, `logout`) so LoginForm/RegisterForm/Header/ProfilePageClient
+ * needed no changes beyond RegisterForm dropping the email-confirmation
+ * branch (MongoDB/Credentials auth has no built-in email verification —
+ * see docs/architecture.md for that as a future improvement).
  */
 export function useAuth() {
-  const supabase = useMemo(() => (isSupabaseConfigured ? createClient() : null), []);
+  const { data: session, status } = useSession();
 
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: isSupabaseConfigured,
-  });
+  const user: User | null = session?.user
+    ? {
+        id: session.user.id,
+        name: session.user.name ?? "Traveler",
+        email: session.user.email ?? "",
+        country: session.user.country,
+        role: (session.user.role as User["role"]) ?? "TOURIST",
+        // Auth.js's session doesn't carry createdAt — good enough for
+        // display purposes until profile data is fetched from Mongo directly.
+        memberSince: new Date().toISOString(),
+      }
+    : null;
 
-  useEffect(() => {
-    if (!supabase) return;
+  const login = useCallback(async ({ email, password }: LoginCredentials) => {
+    const result = await signIn("credentials", { email, password, redirect: false });
+    if (result?.error) {
+      throw new Error("Invalid email or password");
+    }
+  }, []);
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setState({
-        user: session?.user ? mapSupabaseUser(session.user) : null,
-        isAuthenticated: !!session?.user,
-        isLoading: false,
-      });
+  const register = useCallback(async (details: RegisterDetails) => {
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(details),
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState({
-        user: session?.user ? mapSupabaseUser(session.user) : null,
-        isAuthenticated: !!session?.user,
-        isLoading: false,
-      });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}) as { error?: string });
+      throw new Error(body.error ?? "Registration failed");
+    }
+
+    // Registration doesn't log the user in by itself — sign in immediately
+    // after so the flow feels the same as before (register -> /profile).
+    const result = await signIn("credentials", {
+      email: details.email,
+      password: details.password,
+      redirect: false,
     });
-
-    return () => listener.subscription.unsubscribe();
-  }, [supabase]);
-
-  const login = useCallback(
-    async ({ email, password }: LoginCredentials) => {
-      if (!supabase) {
-        throw new Error(
-          "Supabase isn't configured yet — set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local (see docs/database.md)."
-        );
-      }
-      setState((prev) => ({ ...prev, isLoading: true }));
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        throw error;
-      }
-      const user = mapSupabaseUser(data.user);
-      setState({ user, isAuthenticated: true, isLoading: false });
-      return user;
-    },
-    [supabase]
-  );
-
-  const register = useCallback(
-    async ({ name, email, password, country }: RegisterDetails) => {
-      if (!supabase) {
-        throw new Error(
-          "Supabase isn't configured yet — set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local (see docs/database.md)."
-        );
-      }
-      setState((prev) => ({ ...prev, isLoading: true }));
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name, country, role: "TOURIST" } },
-      });
-      if (error) {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        throw error;
-      }
-      // If email confirmation is required, `data.user` exists but there's
-      // no session yet — RegisterForm shows a "check your email" notice
-      // rather than assuming the user is logged in.
-      const user = data.user ? mapSupabaseUser(data.user) : null;
-      setState({ user, isAuthenticated: !!data.session, isLoading: false });
-      if (!user) throw new Error("Registration incomplete — no user returned.");
-      return user;
-    },
-    [supabase]
-  );
+    if (result?.error) {
+      throw new Error("Account created, but automatic sign-in failed — please log in.");
+    }
+  }, []);
 
   const logout = useCallback(async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
-    setState({ user: null, isAuthenticated: false, isLoading: false });
-  }, [supabase]);
+    await signOut({ redirect: false });
+  }, []);
 
-  return { ...state, login, register, logout };
+  return {
+    user,
+    isAuthenticated: status === "authenticated",
+    isLoading: status === "loading",
+    login,
+    register,
+    logout,
+  };
 }

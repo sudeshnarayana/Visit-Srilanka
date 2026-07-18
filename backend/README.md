@@ -12,7 +12,7 @@ now via the `lib/api/` abstraction layer.
   server runs and the frontend can reach it in local dev
 - Empty `controller/ service/ repository/ model/ dto/ config/ exception/`
   packages, mirroring the layered architecture planned for Phase 3
-- `application.properties` — placeholder PostgreSQL/Supabase connection
+- `application.properties` — placeholder MongoDB connection
   settings and local CORS config for `http://localhost:3000`
 
 ## Requirements to actually run this
@@ -36,7 +36,9 @@ curl http://localhost:8080/api/health
 
 ## When to actually build this out
 Per the roadmap, this stays a placeholder until Phase 3 (Trip Planner /
-Budget Calculator need real persistence) or Phase 9 (Supabase integration).
+Budget Calculator need real persistence) or once the frontend's MongoDB
+collections (docs/database.md) need a server-side owner instead of
+Route Handlers.
 Building it earlier than that means maintaining two data sources in
 parallel for no benefit — the frontend's `lib/api/` abstraction exists
 specifically so this swap-in can happen later without touching UI code.

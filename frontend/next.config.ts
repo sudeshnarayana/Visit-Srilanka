@@ -1,17 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: import.meta.dirname,
   images: {
-    // Real hotel/destination photos will come from Supabase Storage (Phase 9).
-    // Unsplash is listed for placeholder imagery during design/dev only —
-    // remove before production if not used for real content.
+    // MongoDB has no built-in object storage (unlike Supabase Storage) —
+    // real hotel/destination photos will need S3, Cloudinary, or similar.
+    // Add that host here once chosen. Unsplash is listed for placeholder
+    // imagery during design/dev only — remove before production.
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
-      },
       {
         protocol: "https",
         hostname: "images.unsplash.com",

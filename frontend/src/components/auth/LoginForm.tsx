@@ -44,12 +44,10 @@ export function LoginForm() {
     setErrors({});
 
     try {
-      // TODO Phase 9: surface real Supabase auth errors here (invalid
-      // credentials, unconfirmed email, etc.) instead of always succeeding.
       await login(result.data);
       router.push("/profile");
-    } catch {
-      setFormError("Something went wrong signing you in. Please try again.");
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Something went wrong signing you in. Please try again.");
     }
   }
 

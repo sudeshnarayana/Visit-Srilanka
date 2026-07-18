@@ -9,7 +9,9 @@ interface SocialLoginButtonsProps {
 
 /**
  * Placeholder social auth entry points. Not wired to a real provider yet —
- * Phase 9 replaces `onSelect` with `supabase.auth.signInWithOAuth({ provider })`.
+ * add a Google/Facebook OAuth provider to src/auth.ts and replace
+ * `onSelect` with `signIn("google")` / `signIn("facebook")` from
+ * next-auth/react once configured.
  */
 export function SocialLoginButtons({ onSelect }: SocialLoginButtonsProps) {
   return (
@@ -40,7 +42,7 @@ export function SocialLoginButtons({ onSelect }: SocialLoginButtonsProps) {
         </Button>
       </div>
       <p className="text-center text-xs text-muted-foreground">
-        Social login connects once Supabase Auth is wired up (Phase 9).
+        Social login connects once a Google/Facebook provider is configured in src/auth.ts.
       </p>
     </div>
   );
