@@ -1,29 +1,7 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
-  const publicRoutes = [
-    "/",
-    "/login",
-    "/register",
-    "/api/auth",
-    "/api/register",
-    "/api/test-db",
-  ];
-
-  const isPublic = publicRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  if (isPublic) {
-    return NextResponse.next();
-  }
-
-  // For protected routes later
-  return NextResponse.next();
-}
+export const { auth: middleware } = NextAuth(authConfig);
 
 export const config = {
   matcher: [

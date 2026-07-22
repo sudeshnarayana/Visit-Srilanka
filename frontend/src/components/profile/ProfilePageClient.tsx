@@ -10,21 +10,19 @@ import { FavoritePlaces } from "@/components/profile/FavoritePlaces";
 import { TravelHistory } from "@/components/profile/TravelHistory";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { getUserTripPlans, deleteTripPlan } from "@/lib/api/tripPlans";
+import type { SavedTrip } from "@/types/user";
 import {
   MOCK_FAVORITE_DESTINATIONS,
   MOCK_FAVORITE_HOTELS,
-  MOCK_SAVED_TRIPS,
   MOCK_TRAVEL_HISTORY,
 } from "@/data/mock-user";
 
 /**
- * ProfileCard now shows the real signed-in user (via useAuth / Auth.js
- * session). SavedTrips/FavoritePlaces/TravelHistory still render mock
- * data — /api/trip-plans and /api/favorites exist (lib/api/tripPlans.ts,
- * favorites.ts) but nothing on this page calls them yet. Wiring that up
- * is the next real step, not done here to keep this migration scoped to
- * "move auth + data layer to MongoDB" rather than also building out
- * profile data fetching.
+ * ProfileCard shows the real signed-in user (via useAuth / Auth.js session).
+ * SavedTrips now fetches real data from /api/trip-plans and supports delete.
+ * FavoritePlaces/TravelHistory still render mock data — wiring those up to
+ * /api/favorites is a follow-up step.
  */
 
 type Tab = "trips" | "favorites" | "history";
@@ -39,6 +37,8 @@ export function ProfilePageClient() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [tab, setTab] = useState<Tab>("trips");
+  const [trips, setTrips] = useState<SavedTrip[]>([]);
+  const [tripsLoading, setTripsLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -46,9 +46,43 @@ export function ProfilePageClient() {
     }
   }, [isLoading, isAuthenticated, router]);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let cancelled = false;
+
+    async function loadTrips() {
+      try {
+        const data = await getUserTripPlans();
+        if (!cancelled) setTrips(data);
+      } catch (err) {
+        console.error("Failed to load trip plans", err);
+      } finally {
+        if (!cancelled) setTripsLoading(false);
+      }
+    }
+
+    loadTrips();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
   async function handleLogout() {
     await logout();
     router.push("/");
+  }
+
+  async function handleRemoveTrip(id: string) {
+    const previous = trips;
+    setTrips((current) => current.filter((trip) => trip.id !== id));
+
+    try {
+      await deleteTripPlan(id);
+    } catch (err) {
+      console.error("Failed to delete trip plan", err);
+      setTrips(previous);
+    }
   }
 
   if (isLoading || !user) {
@@ -84,7 +118,7 @@ export function ProfilePageClient() {
             ))}
           </div>
 
-          {tab === "trips" && <SavedTrips trips={MOCK_SAVED_TRIPS} />}
+          {tab === "trips" && <SavedTrips trips={trips} onRemove={handleRemoveTrip} />}
           {tab === "favorites" && (
             <FavoritePlaces
               destinations={MOCK_FAVORITE_DESTINATIONS}
@@ -97,4 +131,3 @@ export function ProfilePageClient() {
     </main>
   );
 }
-
