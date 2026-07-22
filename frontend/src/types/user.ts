@@ -58,6 +58,7 @@ export interface FavoriteHotel {
 }
 
 export interface SavedTrip {
+  _id?: string;
   id: string;
   title: string;
   duration: number;

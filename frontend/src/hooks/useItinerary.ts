@@ -15,6 +15,8 @@ const INITIAL_SELECTIONS: TripPlannerSelections = {
   destinations: [],
   durationBucket: null,
   travelStyle: null,
+  vehicleId: null,
+  hasGuide: false,
   budget: null,
 };
 
@@ -42,6 +44,14 @@ export function useItinerary() {
     setSelections((prev) => ({ ...prev, travelStyle }));
   }, []);
 
+  const setVehicle = useCallback((vehicleId: string) => {
+    setSelections((prev) => ({ ...prev, vehicleId }));
+  }, []);
+
+  const toggleGuide = useCallback(() => {
+    setSelections((prev) => ({ ...prev, hasGuide: !prev.hasGuide }));
+  }, []);
+
   const setBudget = useCallback((budget: BudgetTier) => {
     setSelections((prev) => ({ ...prev, budget }));
   }, []);
@@ -51,6 +61,7 @@ export function useItinerary() {
       selections.destinations.length > 0 &&
       selections.durationBucket !== null &&
       selections.travelStyle !== null &&
+      selections.vehicleId !== null &&
       selections.budget !== null,
     [selections]
   );
@@ -63,8 +74,13 @@ export function useItinerary() {
       travelStyle: selections.travelStyle as TravelStyle,
       budget: selections.budget as BudgetTier,
     });
-    setItinerary(result);
-    return result;
+    const withVehicle: Itinerary = {
+      ...result,
+      vehicleId: selections.vehicleId,
+      hasGuide: selections.hasGuide,
+    };
+    setItinerary(withVehicle);
+    return withVehicle;
   }, [canGenerate, selections]);
 
   const reset = useCallback(() => {
@@ -78,6 +94,8 @@ export function useItinerary() {
     toggleDestination,
     setDuration,
     setTravelStyle,
+    setVehicle,
+    toggleGuide,
     setBudget,
     canGenerate,
     generate,

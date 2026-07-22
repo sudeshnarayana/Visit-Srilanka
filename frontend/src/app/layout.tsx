@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 
+import "leaflet/dist/leaflet.css";
+
+
 import "./globals.css";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildOrganizationSchema } from "@/lib/seo/schema";

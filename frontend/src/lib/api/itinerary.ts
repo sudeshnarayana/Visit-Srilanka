@@ -36,15 +36,17 @@ export function generateItinerary(params: GenerateItineraryParams): Itinerary {
 
   const title = buildTitle(destinations, totalDays, travelStyle);
 
-  return {
-    id: `itinerary-${Date.now()}`,
-    title,
-    duration: totalDays,
-    destinations,
-    travelStyle,
-    budget,
-    days,
-  };
+ return {
+  id: `itinerary-${Date.now()}`,
+  title,
+  duration: totalDays,
+  destinations,
+  travelStyle,
+  budget,
+  vehicleId: null,
+  hasGuide: false,
+  days,
+};
 }
 
 /** Distributes `totalDays` across the selected destinations in round-robin

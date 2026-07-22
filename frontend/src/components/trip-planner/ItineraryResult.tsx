@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, RotateCcw, Sparkles } from "lucide-react";
+import { CalendarDays, Check, MapPin, RotateCcw, Save, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { saveTripPlan } from "@/lib/api/tripPlans";
 import type { Itinerary } from "@/types/itinerary";
 
 interface ItineraryResultProps {
@@ -15,6 +17,23 @@ interface ItineraryResultProps {
 
 export function ItineraryResult({ itinerary, onReset }: ItineraryResultProps) {
   const totalCost = itinerary.days.reduce((sum, day) => sum + day.estimatedCost, 0);
+
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      await saveTripPlan(itinerary);
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save trip");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -79,7 +98,27 @@ export function ItineraryResult({ itinerary, onReset }: ItineraryResultProps) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-center">
+      {error && (
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2 text-center text-sm text-destructive">
+          {error}
+        </p>
+      )}
+
+      <div className="flex flex-wrap justify-center gap-3">
+        <Button onClick={handleSave} disabled={saving || saved} className="gap-2">
+          {saved ? (
+            <>
+              <Check className="h-4 w-4" />
+              Saved
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4" />
+              {saving ? "Saving..." : "Save Trip"}
+            </>
+          )}
+        </Button>
+
         <Button variant="outline" onClick={onReset} className="gap-2">
           <RotateCcw className="h-4 w-4" />
           Create Another Itinerary

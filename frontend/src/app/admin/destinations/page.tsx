@@ -18,24 +18,17 @@ interface Destination {
   description: string;
   activities: string[];
   imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 const CATEGORIES = ["Heritage", "Wildlife", "Beach", "Mountains"] as const;
 
-async function fileToBase64(file: File): Promise<string> {
+function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") {
-        resolve(result);
-      } else {
-        reject(new Error("Unable to read file"));
-      }
-    };
-    reader.onerror = () => {
-      reject(reader.error ?? new Error("File read error"));
-    };
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
@@ -48,6 +41,9 @@ const EMPTY_FORM = {
   description: "",
   activities: "",
   imageUrl: "" as string,
+  latitude: "",
+  longitude: "",
+
 };
 
 export default function AdminDestinationsPage() {
@@ -93,6 +89,8 @@ export default function AdminDestinationsPage() {
       description: dest.description,
       activities: dest.activities.join(", "),
        imageUrl: dest.imageUrl ?? "",
+       latitude: dest.latitude !== undefined ? String(dest.latitude) : "",
+      longitude: dest.longitude !== undefined ? String(dest.longitude) : "",
     });
     setEditingId(dest._id);
     setFormOpen(true);
@@ -120,6 +118,8 @@ export default function AdminDestinationsPage() {
         .map((a) => a.trim())
         .filter(Boolean),
         imageUrl: form.imageUrl || null,
+        latitude: form.latitude ? Number(form.latitude) : null,
+        longitude: form.longitude ? Number(form.longitude) : null,
     };
 
     try {
@@ -234,6 +234,31 @@ export default function AdminDestinationsPage() {
 
               <div className="flex flex-col gap-1.5 sm:col-span-2">
   <Label htmlFor="image">Photo</Label>
+
+  <div className="flex flex-col gap-1.5">
+  <Label htmlFor="latitude">Latitude</Label>
+  <Input
+    id="latitude"
+    type="number"
+    step="any"
+    value={form.latitude}
+    onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
+    placeholder="7.9570"
+  />
+</div>
+
+<div className="flex flex-col gap-1.5">
+  <Label htmlFor="longitude">Longitude</Label>
+  <Input
+    id="longitude"
+    type="number"
+    step="any"
+    value={form.longitude}
+    onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
+    placeholder="80.7603"
+  />
+</div>
+
   <input
     id="image"
     type="file"
@@ -299,6 +324,34 @@ export default function AdminDestinationsPage() {
                 />
               </div>
 
+              <div className="flex flex-col gap-1.5 sm:col-span-2">
+                <Label htmlFor="image">Photo</Label>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) {
+                      setError("Image must be smaller than 2MB");
+                      return;
+                    }
+                    const base64 = await fileToBase64(file);
+                    setForm((f) => ({ ...f, imageUrl: base64 }));
+                  }}
+                  className="text-sm text-muted-foreground"
+                />
+                {form.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={form.imageUrl}
+                    alt="Preview"
+                    className="mt-2 h-32 w-full rounded-lg object-cover"
+                  />
+                )}
+              </div>
+
               <div className="flex gap-2 sm:col-span-2">
                 <Button type="submit" disabled={saving}>
                   {saving ? "Saving..." : editingId ? "Save Changes" : "Create Destination"}
@@ -323,27 +376,39 @@ export default function AdminDestinationsPage() {
 
         {destinations.map((dest) => (
           <Card key={dest._id}>
-            <CardContent className="flex items-center justify-between gap-4 p-5">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-display text-base font-semibold">{dest.name}</h3>
-                  <Badge variant="secondary">{dest.category}</Badge>
+            <CardContent className="flex items-center gap-4 p-5">
+              {dest.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={dest.imageUrl}
+                  alt={dest.name}
+                  className="h-16 w-16 shrink-0 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="h-16 w-16 shrink-0 rounded-lg bg-muted" />
+              )}
+              <div className="flex flex-1 items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-base font-semibold">{dest.name}</h3>
+                    <Badge variant="secondary">{dest.category}</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{dest.region}</p>
+                  <p className="text-sm text-muted-foreground">{dest.description}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{dest.region}</p>
-                <p className="text-sm text-muted-foreground">{dest.description}</p>
-              </div>
-              <div className="flex shrink-0 gap-1">
-                <Button variant="ghost" size="icon" onClick={() => openEditForm(dest)}>
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-destructive"
-                  onClick={() => handleDelete(dest._id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex shrink-0 gap-1">
+                  <Button variant="ghost" size="icon" onClick={() => openEditForm(dest)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-destructive"
+                    onClick={() => handleDelete(dest._id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

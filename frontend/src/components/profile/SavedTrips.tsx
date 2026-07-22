@@ -24,40 +24,43 @@ export function SavedTrips({ trips, onRemove }: SavedTripsProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      {trips.map((trip, index) => (
-        <motion.div
-          key={trip.id}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
-        >
-          <Card>
-            <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-col gap-2">
-                <h3 className="font-display text-base font-semibold">{trip.title}</h3>
-                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <CalendarDays className="h-3.5 w-3.5" /> {trip.duration} days
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" /> {trip.destinations.join(", ")}
-                  </span>
-                  <Badge variant="secondary">{trip.travelStyle}</Badge>
+      {trips.map((trip, index) => {
+        const tripId = trip._id ?? trip.id;
+        return (
+          <motion.div
+            key={tripId}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <Card>
+              <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-display text-base font-semibold">{trip.title}</h3>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <CalendarDays className="h-3.5 w-3.5" /> {trip.duration} days
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" /> {trip.destinations.join(", ")}
+                    </span>
+                    <Badge variant="secondary">{trip.travelStyle}</Badge>
+                  </div>
                 </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={`Remove ${trip.title}`}
-                onClick={() => onRemove?.(trip.id)}
-                className="text-muted-foreground hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Remove ${trip.title}`}
+                  onClick={() => onRemove?.(tripId)}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

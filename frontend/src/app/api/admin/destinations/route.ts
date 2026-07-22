@@ -13,18 +13,23 @@ async function requireAdmin() {
 }
 
 export async function GET() {
-  const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  try {
+    const session = await requireAdmin();
+    if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const client = await clientPromise;
-  const db = client.db();
-  const destinations = await db
-    .collection("destinations")
-    .find({})
-    .sort({ name: 1 })
-    .toArray();
+    const client = await clientPromise;
+    const db = client.db();
+    const destinations = await db
+      .collection("destinations")
+      .find({})
+      .sort({ name: 1 })
+      .toArray();
 
-  return NextResponse.json(destinations);
+    return NextResponse.json(destinations);
+  } catch (err) {
+    console.error("GET /api/admin/destinations failed:", err);
+    return NextResponse.json({ error: String(err), stack: (err as Error)?.stack }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -52,6 +57,8 @@ export async function POST(request: Request) {
     description: body.description ?? "",
     activities: Array.isArray(body.activities) ? body.activities : [],
     imageUrl: body.imageUrl ?? null,
+    latitude: body.latitude ?? null,
+    longitude: body.longitude ?? null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
